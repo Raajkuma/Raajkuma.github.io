@@ -752,7 +752,7 @@
     ["gateIn", "gateOut"].forEach(k => { $("[data-gate]", node(k)).classList.remove("open", "blocked"); status(k, "○ waiting"); });
     status("orch", "● ready", "ready"); status("you", "○ waiting");
     bubbleYou.hidden = true;
-    $$(".dcard").forEach(c => { c.classList.remove("hit"); $(".stamp", c).hidden = true; });
+    $$(".dcard").forEach(c => { c.classList.remove("hit"); const s = $(".stamp", c); if (s) s.hidden = true; });
   }
 
   /* ---------- gates + router (real code) ---------- */
