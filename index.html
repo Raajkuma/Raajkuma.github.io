@@ -93,7 +93,7 @@
 
   /* Board */
   .board-scroll { position: relative; overflow-x: auto; overflow-y: hidden; border-radius: 24px; border: 1px solid var(--stroke); background: radial-gradient(120% 90% at 50% 0%, #10131C 0%, #07080C 70%); -webkit-overflow-scrolling: touch; isolation: isolate; perspective: 1600px; }
-  .board-scroll::before { content: ""; position: absolute; left: -50%; right: -50%; bottom: -10%; height: 70%; z-index: 0; pointer-events: none;
+  .board-scroll::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 65%; z-index: 0; pointer-events: none;
     background-image: linear-gradient(rgba(103,232,249,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,.10) 1px, transparent 1px);
     background-size: 56px 56px; transform: perspective(500px) rotateX(62deg); transform-origin: 50% 100%;
     mask-image: linear-gradient(to top, #000 10%, transparent 85%); -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
@@ -961,9 +961,10 @@
       if (switching) { reset(); $$(".chip").forEach(c => c.classList.remove("active")); $("#skip").hidden = true; $("#note").classList.remove("armed"); }
     }
     const L = LAYOUT[layout];
-    const z = layout === "wide" ? Math.max(0.8, Math.min(1, avail / L.W)) : Math.max(0.8, Math.min(1.3, avail / L.W));
+    const z = layout === "wide" ? Math.max(0.8, Math.min(1, (avail - 24) / L.W)) : Math.max(0.8, Math.min(1.3, avail / L.W));
     board.style.zoom = z;
     swipe.classList.toggle("show", avail < L.W * z - 2);
+    scroller.style.overflowX = avail >= L.W * z + 8 ? "hidden" : "auto";
     fxSize(); if (reduce) fxDraw();
   }
 
