@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* Layout: mission-control board (glass agents on a live particle field) above a run trace, merged answer and the dossier. Single deliberate dark look. */
+  /* Layout: 3D agent office (Three.js robots on a slate floor) above a run trace, merged answer and the dossier. Single deliberate dark look. */
   :root {
     --bg: #07080C;
     --bg2: #0C0E14;
@@ -91,144 +91,47 @@
   .skip[hidden] { display: none; }
   .counter { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
 
-  /* Board */
-  .board-scroll { position: relative; overflow-x: auto; overflow-y: hidden; border-radius: 24px; border: 1px solid var(--stroke); background: radial-gradient(120% 90% at 50% 0%, #10131C 0%, #07080C 70%); -webkit-overflow-scrolling: touch; isolation: isolate; perspective: 1600px; }
-  .board-scroll::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 65%; z-index: 0; pointer-events: none;
-    background-image: linear-gradient(rgba(103,232,249,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,.10) 1px, transparent 1px);
-    background-size: 56px 56px; transform: perspective(500px) rotateX(62deg); transform-origin: 50% 100%;
-    mask-image: linear-gradient(to top, #000 10%, transparent 85%); -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
-    animation: floor 4s linear infinite; }
-  @keyframes floor { to { background-position: 0 56px, 0 0; } }
-  .fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-  .board { position: relative; z-index: 1; width: 1340px; height: 640px; margin: 0 auto; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
-  .swipe { display: none; font-family: var(--mono); font-size: .74rem; color: var(--faint); margin: 8px 0 0; text-align: center; }
-  .swipe.show { display: block; }
-
-  .wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .wires .wire { fill: none; stroke: var(--wire); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .wires .flow { fill: none; stroke: rgba(103,232,249,.28); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 2 14; animation: flow 1.6s linear infinite; }
-  @keyframes flow { to { stroke-dashoffset: -32; } }
-  .wires .lit { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px currentColor); }
-
-  .node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); z-index: 2; transition: opacity .4s, filter .4s; }
-  .node.dim { opacity: .38; filter: saturate(.4); }
-
-  /* Orbs */
-  .bot { position: relative; width: 84px; height: 84px; display: block; }
-  .bot.big { width: 104px; height: 104px; }
-  .orb { position: absolute; inset: 0; border-radius: 50%; }
-  .orb .halo { position: absolute; inset: -14px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--h) 34%, transparent), transparent 65%); animation: breathe 4s ease-in-out infinite; }
-  .orb .ring { position: absolute; inset: 2px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0 55%, var(--h) 88%, transparent 100%);
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
-    animation: spin 5s linear infinite; }
-  .orb .dash { position: absolute; inset: -6px; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--h) 45%, transparent); animation: spin 22s linear infinite reverse; }
-  .orb .core { position: absolute; inset: 18px; border-radius: 50%; display: grid; place-items: center;
-    background: radial-gradient(circle at 34% 28%, rgba(255,255,255,.75), var(--h) 42%, color-mix(in srgb, var(--h) 35%, #000) 100%);
-    box-shadow: 0 0 22px color-mix(in srgb, var(--h) 70%, transparent), inset 0 -6px 12px rgba(0,0,0,.35); transition: transform .4s cubic-bezier(.3,1.6,.5,1), filter .4s; }
-  .bot.big .core { inset: 22px; }
-  .orb .glyph { font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: .04em; color: rgba(5,8,14,.85); }
-  .orb .sat { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; margin: -3.5px; border-radius: 50%; background: var(--h); box-shadow: 0 0 10px var(--h); animation: orbit 6s linear infinite; --r: 44px; transform: rotate(-40deg) translateX(var(--r)); }
-  .bot.big .orb .sat { --r: 56px; }
-  .orb .sat.s2 { transform: rotate(150deg) translateX(var(--r)); animation-duration: 9s; animation-direction: reverse; width: 4px; height: 4px; margin: -2px; opacity: .7; }
-  .orb .ripple { position: absolute; inset: 18px; border-radius: 50%; border: 2px solid var(--h); opacity: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes orbit { from { transform: rotate(0deg) translateX(var(--r)); } to { transform: rotate(360deg) translateX(var(--r)); } }
-  @keyframes breathe { 50% { opacity: .55; transform: scale(.92); } }
-  @keyframes ripple { from { transform: scale(1); opacity: .9; } to { transform: scale(2.3); opacity: 0; } }
-  .sleep .orb .core { filter: saturate(.35) brightness(.55); }
-  .sleep .orb .ring { animation-duration: 16s; opacity: .35; }
-  .sleep .orb .sat { animation-duration: 16s; opacity: .35; }
-  .sleep .orb .halo { opacity: .25; animation: none; }
-  .work .orb .ring { animation-duration: .9s; }
-  .work .orb .sat { animation-duration: 1.6s; }
-  .work .orb .ripple { animation: ripple 1.3s ease-out infinite; }
-  .work .orb .ripple.r2 { animation-delay: .65s; }
-  .work .orb .core { transform: scale(1.08); }
-  .pop .orb .core { animation: pop .6s cubic-bezier(.3,1.8,.5,1); }
-  @keyframes pop { 40% { transform: scale(1.35); } }
-  /* orchestrator gyroscope */
-  .gyro { position: absolute; inset: -4px; transform-style: preserve-3d; pointer-events: none; }
-  .gyro i { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--h) 60%, transparent); }
-  .gyro i:nth-child(1) { animation: g1 7s linear infinite; }
-  .gyro i:nth-child(2) { animation: g2 9s linear infinite; border-color: rgba(103,232,249,.5); }
-  .gyro i:nth-child(3) { animation: g3 11s linear infinite; border-style: dashed; }
-  @keyframes g1 { from { transform: rotateX(70deg) rotateZ(0); } to { transform: rotateX(70deg) rotateZ(360deg); } }
-  @keyframes g2 { from { transform: rotateY(70deg) rotateZ(0); } to { transform: rotateY(70deg) rotateZ(-360deg); } }
-  @keyframes g3 { from { transform: rotateX(45deg) rotateY(45deg) rotateZ(0); } to { transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg); } }
-  .work .gyro i { animation-duration: 1.4s; }
-
-  /* Gates */
-  .gate { position: relative; width: 84px; height: 84px; display: block; --h: var(--h-gate); }
-  .gate .hex { position: absolute; inset: 0; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); background: linear-gradient(160deg, color-mix(in srgb, var(--h) 70%, transparent), color-mix(in srgb, var(--h) 15%, transparent)); transition: background .4s; }
-  .gate .hex2 { position: absolute; inset: 3px; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); background: #0B0E15; overflow: hidden; }
-  .gate .beam { position: absolute; left: 0; right: 0; height: 30%; top: -30%; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--h) 55%, transparent), transparent); animation: scan 2.4s ease-in-out infinite; }
-  @keyframes scan { to { top: 100%; } }
-  .gate .gl { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: .12em; color: var(--h); text-shadow: 0 0 10px var(--h); }
-  .gate .burst { position: absolute; inset: 10px; border-radius: 50%; border: 2px solid var(--h); opacity: 0; }
-  .gate.checking .beam { animation-duration: .6s; }
-  .gate.open { --h: var(--ok); }
-  .gate.open .burst, .gate.blocked .burst { animation: ripple .8s ease-out 2; }
-  .gate.blocked { --h: var(--bad); animation: shake .5s; }
-  @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-
-  /* You */
-  .you { position: relative; width: 84px; height: 84px; display: grid; place-items: center; }
-  .you .face { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .04em; color: var(--text);
-    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.18), rgba(255,255,255,.04)); border: 1px solid var(--stroke2); transition: box-shadow .4s, border-color .4s; }
-  .you .ripple { position: absolute; inset: 11px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; }
-  .reached .you .face { border-color: var(--accent); box-shadow: 0 0 30px -2px rgba(103,232,249,.6); }
-  .reached .you .ripple { animation: ripple 1.6s ease-out 3; }
-  .reached .you .ripple.r2 { animation-delay: .5s; }
-
-  /* Node labels */
-  .tag { position: relative; width: 168px; margin-top: 10px; padding: 8px 12px 9px; border-radius: 12px; text-align: left; background: rgba(13,16,24,.72); border: 1px solid var(--stroke); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color .4s, box-shadow .4s; }
-  .tag::before { content: ""; position: absolute; left: 12px; right: 12px; top: -1px; height: 1px; background: linear-gradient(90deg, transparent, var(--c), transparent); }
-  .tag b { display: block; font-family: var(--display); font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
-  .tag small { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.35; }
-  .tag .st { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 3px; }
-  .tag .st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
-  .st.ready, .st.ok { color: var(--ok); }
-  .st.work { color: var(--warn); }
-  .st.work::before { animation: blinkDot .7s infinite; }
-  .st.bad { color: var(--bad); }
-  @keyframes blinkDot { 50% { opacity: .2; } }
-  .node.work .tag { border-color: color-mix(in srgb, var(--c) 60%, transparent); box-shadow: 0 0 26px -8px var(--c); }
-  .gate-node .tag { width: 128px; }
-
-  .note { position: absolute; left: 18px; top: 300px; width: 176px; padding: 12px 14px; border-radius: 14px; z-index: 2; background: rgba(13,16,24,.72); border: 1px solid var(--stroke2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  .note::after { content: ""; position: absolute; inset: -1px; border-radius: 14px; padding: 1px; background: conic-gradient(from var(--a, 0deg), transparent 70%, var(--accent), transparent); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .4s; }
+  /* Office: 3D agent board */
+  .office { position: relative; height: clamp(460px, 52vw, 640px); border-radius: 24px; overflow: hidden; border: 1px solid var(--stroke); background: #2B323D; touch-action: pan-y; }
+  .office canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .nogl { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); font-size: .95rem; }
+  .lbl { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 2px; white-space: nowrap; transition: opacity .3s; }
+  .lbl b { font: 600 11.5px var(--mono); color: #F2F4F8; background: rgba(10,12,18,.76); border: 1px solid rgba(255,255,255,.14); padding: 2px 8px; border-radius: 6px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .lbl span { font: 500 10.5px var(--mono); color: #C5CBD6; background: rgba(10,12,18,.6); padding: 1px 6px; border-radius: 5px; }
+  .lbl span:empty { display: none; }
+  .lbl.work span { color: var(--warn); } .lbl.ok span { color: var(--ok); } .lbl.bad span { color: var(--bad); } .lbl.dim { opacity: .4; }
+  .note { position: absolute; left: 16px; top: 16px; z-index: 3; width: min(300px, calc(100% - 32px)); padding: 10px 14px; border-radius: 14px; background: rgba(13,16,24,.8); border: 1px solid var(--stroke); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .note::after { content: ""; position: absolute; inset: -1px; border-radius: 14px; padding: 1px; background: conic-gradient(from var(--a, 0deg), transparent 70%, var(--accent)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; pointer-events: none; }
   .note.armed::after { opacity: 1; animation: rot 3s linear infinite; }
   @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
   @keyframes rot { to { --a: 360deg; } }
-  .note p { margin: 4px 0 0; font-weight: 600; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
-  .bubble { position: absolute; z-index: 4; padding: 9px 12px; border-radius: 12px; font-size: 13px; font-weight: 500; line-height: 1.35; background: rgba(13,16,24,.85); border: 1px solid rgba(255,209,102,.35); box-shadow: 0 10px 30px -10px rgba(0,0,0,.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  .bubble::after { content: ""; position: absolute; bottom: -6px; width: 10px; height: 10px; background: #0D1018; border-right: 1px solid rgba(255,209,102,.35); border-bottom: 1px solid rgba(255,209,102,.35); transform: rotate(45deg); }
-  .bubble.orch { left: 300px; top: 196px; width: 186px; }
-  .bubble.orch::after { left: 88px; }
-  .bubble.youb { left: 1148px; top: 226px; width: 172px; border-color: rgba(103,232,249,.4); }
-  .bubble.youb::after { left: 116px; border-color: rgba(103,232,249,.4); }
+  .note p { margin: 3px 0 0; font-weight: 600; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+  .bubble { position: absolute; left: 0; top: 0; z-index: 4; width: 196px; padding: 8px 11px; border-radius: 12px; font-size: 12.5px; font-weight: 500; line-height: 1.35; background: rgba(13,16,24,.88); border: 1px solid rgba(255,209,102,.4); box-shadow: 0 10px 30px -10px rgba(0,0,0,.6); pointer-events: none; }
+  .bubble::after { content: ""; position: absolute; bottom: -6px; left: calc(50% - 5px); width: 10px; height: 10px; background: #0D1018; border-right: 1px solid rgba(255,209,102,.4); border-bottom: 1px solid rgba(255,209,102,.4); transform: rotate(45deg); }
+  .bubble.youb { border-color: rgba(103,232,249,.45); } .bubble.youb::after { border-color: rgba(103,232,249,.45); }
   .bubble[hidden] { display: none; }
   .bubble .caret { display: inline-block; width: 7px; height: 13px; margin-left: 2px; vertical-align: -2px; background: var(--h-orch); animation: blinkDot .8s infinite; }
-
-  .panel { position: absolute; left: 1068px; top: 22px; width: 252px; z-index: 2; padding: 13px 15px; border-radius: 14px; background: rgba(9,11,17,.8); border: 1px solid var(--stroke); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); font-family: var(--mono); font-size: 12px; }
-  .panel h3 { margin: 0 0 9px; font-size: 11.5px; color: var(--h-orch); letter-spacing: .06em; font-weight: 500; }
-  .panel dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; font-family: var(--body); font-size: 12.5px; color: var(--muted); }
+  @keyframes blinkDot { 50% { opacity: .2; } }
+  .panel { position: absolute; right: 16px; top: 16px; width: 236px; z-index: 3; padding: 12px 14px; border-radius: 14px; background: rgba(9,11,17,.82); border: 1px solid var(--stroke); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); font-family: var(--mono); font-size: 12px; }
+  .panel h3 { margin: 0 0 8px; font-size: 11.5px; color: var(--h-orch); letter-spacing: .06em; font-weight: 500; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; font-family: var(--body); font-size: 12.5px; color: var(--muted); }
+  .panel dt { margin: 0; }
   .panel dd { margin: 0; font-family: var(--mono); color: var(--ok); font-variant-numeric: tabular-nums; text-align: right; }
   .panel dd.red { color: var(--bad); }
   .panel dd.bump { animation: bump .5s; }
   @keyframes bump { 40% { transform: scale(1.5); text-shadow: 0 0 10px currentColor; } }
-  .panel p { margin: 9px 0 0; font-size: 10.5px; color: var(--faint); }
-
-  .packet { position: absolute; z-index: 3; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px 2px var(--pc), 0 0 18px 6px var(--pc); pointer-events: none; }
-  .trail { position: absolute; z-index: 3; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--pc); pointer-events: none; }
-
-  .board.tall .tag { width: 158px !important; }
-  .board.tall .gate-node .tag { width: 140px !important; }
-  .board.tall .note { left: 14px; top: 16px; width: 150px; }
-  .board.tall .bubble.orch { left: 10px; top: 212px; width: 152px; }
-  .board.tall .bubble.orch::after { left: 120px; }
-  .board.tall .bubble.youb { display: none; }
-  .board.tall .panel { left: 54px; top: 1170px; }
+  .panel p { margin: 8px 0 0; font-size: 10.5px; color: var(--faint); }
+  @media (max-width: 760px) {
+    .office { height: 680px; }
+    .bubble.youb { display: none !important; }
+    .note { top: 12px; left: 12px; width: calc(100% - 24px); padding: 8px 12px; }
+    .note p { font-size: 13px; }
+    .panel { top: auto; bottom: 12px; right: 12px; left: 12px; width: auto; padding: 8px 12px; }
+    .panel h3, .panel p { display: none; }
+    .panel dl { grid-template-columns: repeat(3, auto auto); gap: 4px 8px; font-size: 11px; }
+    .bubble { width: 168px; font-size: 12px; }
+    .lbl b { font-size: 10px; padding: 1px 6px; } .lbl span { font-size: 9.5px; }
+  }
 
   /* Trace + answer */
   .card { border-radius: 20px; background: var(--glass); border: 1px solid var(--stroke); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
@@ -371,49 +274,20 @@
     <span class="counter" id="counter">missions completed 0 / 6</span>
   </div>
 
-  <div class="board-scroll" id="board-scroll">
-    <canvas class="fx" id="fx" aria-hidden="true"></canvas>
-    <div class="board" id="board" role="img" aria-label="Agent board: input gate, orchestrator, five specialist agents, output gate, contact agent and you. Status updates appear in the run trace below.">
-      <svg class="wires" id="wires" viewBox="0 0 1340 640" aria-hidden="true"><g id="wires-base"></g><g id="wires-flow"></g><g id="wires-lit"></g></svg>
-
-      <div class="note" id="note"><span class="eyebrow">Your mission</span><p id="note-text">Pick a mission above</p></div>
-
-      <div class="node gate-node" id="n-gateIn"><span class="gate" data-gate="IN"></span>
-        <div class="tag" style="--c:var(--h-gate)"><b>Input gate</b><span class="st" data-st>waiting</span></div></div>
-      <div class="node" id="n-orch"><span class="bot big" data-orb="orch" style="--h:var(--h-orch)"></span>
-        <div class="tag" style="--c:var(--h-orch)"><b>Orchestrator</b><small>plans · routes · merges</small><span class="st ready" data-st>ready</span></div></div>
-      <div class="node sleep" id="n-profile"><span class="bot" data-orb="ID" style="--h:var(--h-profile)"></span>
-        <div class="tag" style="--c:var(--h-profile)"><b>Profile Agent</b><small>who he is</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node sleep" id="n-experience"><span class="bot" data-orb="XP" style="--h:var(--h-exp)"></span>
-        <div class="tag" style="--c:var(--h-exp)"><b>Experience Agent</b><small>3 roles since 2018</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node sleep" id="n-credentials"><span class="bot" data-orb="CR" style="--h:var(--h-cred)"></span>
-        <div class="tag" style="--c:var(--h-cred)"><b>Credentials Agent</b><small>degrees · certs</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node sleep" id="n-projects"><span class="bot" data-orb="PR" style="--h:var(--h-proj)"></span>
-        <div class="tag" style="--c:var(--h-proj)"><b>Projects Agent</b><small>work + GitHub builds</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node sleep" id="n-skills"><span class="bot" data-orb="SK" style="--h:var(--h-skill)"></span>
-        <div class="tag" style="--c:var(--h-skill)"><b>Skills Agent</b><small>the toolbelt</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node gate-node" id="n-gateOut"><span class="gate" data-gate="OUT"></span>
-        <div class="tag" style="--c:var(--h-gate)"><b>Output gate</b><span class="st" data-st>waiting</span></div></div>
-      <div class="node sleep" id="n-contact"><span class="bot" data-orb="@" style="--h:var(--h-contact)"></span>
-        <div class="tag" style="--c:var(--h-contact);width:112px"><b>Contact</b><small>hands off</small><span class="st" data-st>waiting</span></div></div>
-      <div class="node" id="n-you"><span class="you"><span class="ripple"></span><span class="ripple r2"></span><span class="face">YOU</span></span>
-        <div class="tag" style="--c:var(--accent);width:112px"><b>You</b><small>the final call</small><span class="st" data-st>waiting</span></div></div>
-
-      <div class="bubble orch" id="bubble-orch">Hi! Give me a mission and watch the team work.</div>
-      <div class="bubble youb" id="bubble-you" hidden>Over to you.</div>
-
-      <aside class="panel" aria-label="Guardrail counters for this visit">
-        <h3>GUARDRAILS · this visit</h3>
-        <dl>
-          <dt>missions routed</dt><dd id="k-routed">0</dd>
-          <dt>inputs blocked</dt><dd id="k-blocked" class="red">0</dd>
-          <dt>answers grounded</dt><dd id="k-grounded">0 / 0</dd>
-        </dl>
-        <p>counted live by the gates in this page</p>
-      </aside>
-    </div>
+  <div class="office" id="office" role="img" aria-label="3D office: an input guard robot at the door, the orchestrator robot, five specialist agent robots at their desks, an output guard, the contact robot and you. Status updates appear in the run trace below.">
+    <div class="note" id="note"><span class="eyebrow">Your mission</span><p id="note-text">Pick a mission above</p></div>
+    <div class="bubble orch" id="bubble-orch">Hi! Give me a mission and watch the team work.</div>
+    <div class="bubble youb" id="bubble-you" hidden>Over to you.</div>
+    <aside class="panel" aria-label="Guardrail counters for this visit">
+      <h3>GUARDRAILS · this visit</h3>
+      <dl>
+        <dt>routed</dt><dd id="k-routed">0</dd>
+        <dt>blocked</dt><dd id="k-blocked" class="red">0</dd>
+        <dt>grounded</dt><dd id="k-grounded">0 / 0</dd>
+      </dl>
+      <p>counted live by the guards in this page</p>
+    </aside>
   </div>
-  <p class="swipe" id="swipe">↔ swipe sideways to see the whole board</p>
 
   <section class="card trace" aria-labelledby="trace-h">
     <h2 id="trace-h"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>Run trace <span>· every step, in order</span></h2>
@@ -636,15 +510,14 @@
   <section class="card dcard built" id="built" style="--c:var(--ink)">
     <span class="eyebrow">Under the hood</span>
     <h2>How this page is built</h2>
-    <p class="lede">One static HTML file with no framework, no libraries and no build step. Only the fonts load from outside.</p>
+    <p class="lede">One static HTML file with no framework and no build step. Two things load from outside: the fonts and the Three.js library.</p>
     <div class="built-grid" style="margin-top:20px">
-      <div class="built-item"><h3>HTML + CSS</h3><p>Semantic HTML holds every word of the dossier, so it reads fine without JavaScript. CSS custom properties drive the light and dark themes, with grid and flexbox layouts, keyframe animations for the robots and gates, and CSS zoom to fit the board on smaller screens.</p></div>
-      <div class="built-item"><h3>Inline SVG</h3><p>Robots, gates and tile trails are drawn in code from simple shapes. No image files.</p></div>
-      <div class="built-item"><h3>Vanilla JavaScript</h3><p>An async run engine sequences each mission. Packets travel with requestAnimationFrame. Output-gate counts are read live from the dossier.</p></div>
-      <div class="built-item"><h3>Guardrails + router</h3><p>The input gate uses regular expressions to block prompt-injection phrases and private-data requests. A keyword router picks the agents. No LLM is called.</p></div>
-      <div class="built-item"><h3>Type</h3><p>Rubik Mono One, Fraunces, Inter and JetBrains Mono from Google Fonts.</p></div>
-      <div class="built-item"><h3>Accessibility + hosting</h3><p>WCAG AA contrast in both themes, reduced-motion support, keyboard focus states. Hosted on GitHub Pages.</p></div>
-    </div>
+      <div class="built-item"><h3>HTML + CSS</h3><p>Semantic HTML holds every word of the dossier, so it reads fine without JavaScript. CSS custom properties, grid and flexbox handle the layout, and glass panels float over the 3D office.</p></div>
+      <div class="built-item"><h3>Three.js office</h3><p>A WebGL scene with an orthographic camera, soft shadows and robots built from simple shapes in code. No 3D model files. On phones the camera turns to look down the office lengthways.</p></div>
+      <div class="built-item"><h3>Vanilla JavaScript</h3><p>An async run engine sequences each mission. Glowing packets fly between robots on requestAnimationFrame, and output-guard counts are read live from the dossier.</p></div>
+      <div class="built-item"><h3>Guardrails + router</h3><p>The input guard uses regular expressions to block prompt-injection phrases and private-data requests. A keyword router picks the agents.</p></div>
+      <div class="built-item"><h3>Type</h3><p>Space Grotesk, Inter and JetBrains Mono from Google Fonts.</p></div>
+      <div class="built-item"><h3>Accessibility + hosting</h3><p>Readable contrast, reduced-motion support, keyboard focus states and a text run trace for every step. Hosted on GitHub Pages.</p></div>
   </section>
 
 
@@ -654,6 +527,7 @@
   </footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (() => {
   "use strict";
@@ -670,126 +544,230 @@
     try { navigator.clipboard.writeText(emailEl.textContent.trim()).then(done, fallback); } catch (e) { fallback(); }
   });
 
-  /* ---------- draw orbs + gates ---------- */
-  $$("[data-orb]").forEach(el => {
-    const g = el.dataset.orb, big = g === "orch";
-    el.innerHTML = '<span class="orb"><span class="halo"></span><span class="dash"></span><span class="ring"></span>' +
-      (big ? '<span class="gyro"><i></i><i></i><i></i></span>' : "") +
-      '<span class="ripple"></span><span class="ripple r2"></span><span class="core"><span class="glyph">' + (big ? "AI" : g) + '</span></span><span class="sat"></span><span class="sat s2"></span></span>';
-  });
-  $$("[data-gate]").forEach(el => { el.innerHTML = '<span class="hex"></span><span class="hex2"><span class="beam"></span></span><span class="burst"></span><span class="gl">' + el.dataset.gate + '</span>'; });
-
-  /* ---------- layouts ---------- */
-  const COLOR = { profile: "#7AA2FF", experience: "#5EEAA0", credentials: "#B69CFF", projects: "#FF7A8A", skills: "#FFB86B", orch: "#FFD166", contact: "#4FD1C5", accent: "#67E8F9" };
+  const COLOR = { profile: "#7AA2FF", experience: "#3FD98B", credentials: "#A98BFF", projects: "#FF6B81", skills: "#FFA94D", orch: "#FFC94D", contact: "#4FD1C5", accent: "#45D4EC" };
   const LABEL = { profile: "Profile", experience: "Experience", credentials: "Credentials", projects: "Projects", skills: "Skills" };
   const AGENTS = ["profile", "experience", "credentials", "projects", "skills"];
-  const scroller = $("#board-scroll"), board = $("#board"), swipe = $("#swipe"), wires = $("#wires");
-  const NS = "http://www.w3.org/2000/svg", wBase = $("#wires-base"), wFlow = $("#wires-flow"), wLit = $("#wires-lit");
-  const LAYOUT = {
-    wide: { W: 1340, H: 640,
-      pos: { gateIn: [250, 308], orch: [400, 298], profile: [580, 70], experience: [760, 70], credentials: [940, 70], projects: [670, 446], skills: [850, 446], gateOut: [1046, 308], contact: [1168, 308], you: [1281, 308] },
-      paths(pos) {
-        const Y = 350;
-        const P = { noteToGate: [[194, Y], [250, Y]], gateToOrch: [[250, Y], [400, Y]], gateToContact: [[1046, Y], [1168, Y]], contactToYou: [[1168, Y], [1281, Y]] };
-        AGENTS.forEach(a => {
-          const x = pos[a][0], top = pos[a][1] < 200;
-          P["out_" + a] = top ? [[400, Y], [482, Y], [482, 268], [x, 268], [x, 236]] : [[400, Y], [x, Y], [x, 446]];
-          P["back_" + a] = top ? [[x, 236], [x, 268], [1000, 268], [1000, Y], [1046, Y]] : [[x, 446], [x, 404], [1000, 404], [1000, Y], [1046, Y]];
-        });
-        return P;
-      } },
-    tall: { W: 360, H: 1360,
-      pos: { gateIn: [265, 10], orch: [265, 200], profile: [95, 420], experience: [265, 420], credentials: [95, 610], projects: [265, 610], skills: [95, 800], gateOut: [265, 800], contact: [95, 990], you: [265, 990] },
-      paths(pos) {
-        const P = { noteToGate: [[164, 52], [265, 52]], gateToOrch: [[265, 52], [265, 252]], gateToContact: [[265, 842], [180, 842], [180, 1032], [95, 1032]], contactToYou: [[95, 1032], [265, 1032]] };
-        AGENTS.forEach(a => {
-          const [x, t] = pos[a], y = t + 42;
-          P["out_" + a] = [[265, 252], [180, 252], [180, y], [x, y]];
-          P["back_" + a] = [[x, y], [180, y], [180, 842], [265, 842]];
-        });
-        return P;
-      } }
-  };
-  let P = {}, LEN = {}, layout = "";
-  const dOf = pts => "M" + pts.map(p => p.join(" ")).join(" L");
-  const lenOf = pts => { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; };
-  function mkPath(cls, d) { const p = document.createElementNS(NS, "path"); p.setAttribute("class", cls); p.setAttribute("d", d); return p; }
-  function applyLayout(name) {
-    const L = LAYOUT[name];
-    layout = name;
-    board.classList.toggle("tall", name === "tall");
-    board.style.width = L.W + "px"; board.style.height = L.H + "px";
-    wires.setAttribute("viewBox", "0 0 " + L.W + " " + L.H);
-    for (const k in L.pos) { const n = $("#n-" + k); n.style.left = L.pos[k][0] + "px"; n.style.top = L.pos[k][1] + "px"; }
-    P = L.paths(L.pos); LEN = {};
-    wBase.innerHTML = ""; wFlow.innerHTML = ""; wLit.innerHTML = "";
-    for (const k in P) { const d = dOf(P[k]); LEN[k] = lenOf(P[k]); wBase.appendChild(mkPath("wire", d)); wFlow.appendChild(mkPath("flow", d)); }
-  }
-  function pointAt(pts, d) {
-    for (let i = 1; i < pts.length; i++) {
-      const [x1, y1] = pts[i - 1], [x2, y2] = pts[i], L = Math.hypot(x2 - x1, y2 - y1);
-      if (d <= L) return [x1 + (x2 - x1) * d / L, y1 + (y2 - y1) * d / L];
-      d -= L;
-    }
-    return pts[pts.length - 1];
-  }
+  const NAMES = { gateIn: "Input guard", orch: "Orchestrator", profile: "Profile", experience: "Experience", credentials: "Credentials", projects: "Projects", skills: "Skills", gateOut: "Output guard", contact: "Contact", you: "You" };
+  const officeEl = $("#office"), bubbleOrch = $("#bubble-orch"), bubbleYou = $("#bubble-you");
 
-  /* ---------- background particle field ---------- */
-  const fx = $("#fx"), ctx = fx.getContext("2d");
-  let pts = [], fxW = 0, fxH = 0, fxOn = true;
-  function fxSize() {
-    const dpr = Math.min(devicePixelRatio || 1, 2); fxW = scroller.clientWidth; fxH = scroller.clientHeight;
-    fx.width = fxW * dpr; fx.height = fxH * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.round(fxW * fxH / 16000);
-    pts = Array.from({ length: n }, () => ({ x: Math.random() * fxW, y: Math.random() * fxH, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, r: Math.random() * 1.4 + .4 }));
-  }
-  function fxDraw() {
-    ctx.clearRect(0, 0, fxW, fxH);
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i];
-      if (!reduce) { a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > fxW) a.vx *= -1; if (a.y < 0 || a.y > fxH) a.vy *= -1; }
-      for (let j = i + 1; j < pts.length; j++) {
-        const b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 110) { ctx.strokeStyle = "rgba(103,232,249," + (0.12 * (1 - d / 110)) + ")"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
-      }
-      ctx.fillStyle = "rgba(200,230,255,.55)"; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
+  /* ---------- 3D office (Three.js) ---------- */
+  function makeOffice(host) {
+    const T = window.THREE; if (!T) return null;
+    const canvas = document.createElement("canvas"); canvas.setAttribute("aria-hidden", "true"); host.prepend(canvas);
+    let R; try { R = new T.WebGLRenderer({ canvas, antialias: true }); } catch (e) { canvas.remove(); return null; }
+    R.setPixelRatio(Math.min(2, devicePixelRatio || 1)); R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap; R.setClearColor(0x2B323D);
+    const scene = new T.Scene();
+    scene.add(new T.HemisphereLight(0xFFFFFF, 0x3A4250, .85));
+    const sun = new T.DirectionalLight(0xFFFFFF, 1); sun.position.set(6, 16, 10); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -19, right: 19, top: 19, bottom: -19, near: 1, far: 60 }); sun.shadow.bias = -.0008; scene.add(sun);
+    const camera = new T.OrthographicCamera(-1, 1, 1, -1, .1, 200);
+    const HUE = { profile: 0x7AA2FF, experience: 0x3FD98B, projects: 0xFF6B81, skills: 0xFFA94D, credentials: 0xA98BFF, orch: 0xFFC94D, gate: 0x45D4EC, contact: 0x4FD1C5, you: 0x3FD98B, ok: 0x3FD98B, bad: 0xFF4D63 };
+    const std = (c, x = {}) => new T.MeshStandardMaterial(Object.assign({ color: c, roughness: .6 }, x));
+    const glowTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d"); const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(.25, "rgba(255,255,255,.55)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new T.CanvasTexture(c); })();
+    const glow = (hex, s) => { const m = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: hex, transparent: true, blending: T.AdditiveBlending, depthWrite: false })); m.scale.set(s, s, s); return m; };
+    function codeTex(hex) {
+      const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"), col = "#" + hex.toString(16).padStart(6, "0");
+      g.fillStyle = "#0A1220"; g.fillRect(0, 0, 128, 128);
+      for (let y = 6; y < 128; y += 9) { let x = 8 + (Math.random() * 3 | 0) * 8; while (x < 116) { const w = 8 + Math.random() * 30; g.fillStyle = Math.random() < .35 ? col : Math.random() < .5 ? "#7F8BA3" : "#3C4A63"; g.fillRect(x, y, Math.min(w, 120 - x), 4); x += w + 6; if (Math.random() < .3) break; } }
+      const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; return t;
     }
+    function box(w, h, d, mat, x, y, z, cast = true) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), typeof mat === "number" ? std(mat) : mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; scene.add(m); return m; }
+    function mesh(geo, mat, x, y, z) { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; }
+
+    /* room */
+    box(32, .3, 16, std(0x343C49, { roughness: .55 }), 0, -.15, 0, false);
+    const grid = new T.GridHelper(32, 16, 0x404958, 0x404958); grid.position.y = .01; grid.scale.z = 16 / 32; scene.add(grid);
+    const strip = new T.MeshBasicMaterial({ color: 0xFFD9A0 }), glass = std(0xA9CBEA, { transparent: true, opacity: .14, roughness: .1 });
+    box(32, 1.5, .3, 0x4A5463, 0, .75, -8.15); box(.3, 1.5, 16, 0x454F5E, -16.15, .75, 0);
+    box(32, .06, .06, strip, 0, 1.53, -7.98, false); box(.06, .06, 16, strip, -15.98, 1.53, 0, false);
+    box(32, 2.6, .05, glass, 0, 2.8, -8.15, false); box(.05, 2.6, 16, glass, -16.15, 2.8, 0, false);
+    for (let x = -16; x <= 16; x += 4) box(.12, 2.6, .12, 0x5A6576, x, 2.8, -8.15);
+    [[-15, -7], [15, -7], [-15, 6.6], [7, -6.8], [-8.6, -6.8]].forEach(([x, z]) => { mesh(new T.CylinderGeometry(.32, .25, .6, 20), std(0xF4F6F8), x, .3, z); mesh(new T.IcosahedronGeometry(.62, 1), std(0x3E9E6B, { flatShading: true, roughness: .8 }), x, 1.15, z); });
+    box(2.6, .9, 1, 0x2B2F36, -12, .45, -6.4); box(.5, .5, .4, 0xF2F4F7, -12.7, 1.15, -6.4);
+
+    /* robots */
+    function makeBot(hue) {
+      const g = new T.Group(), mat = (c, e = 0, ei = 0, x = {}) => new T.MeshStandardMaterial(Object.assign({ color: c, emissive: e, emissiveIntensity: ei, roughness: .38 }, x));
+      const body = mat(0xF6F7F9), trim = mat(0x2B303A), visorM = mat(0x0B0D12, hue, 1.1, { roughness: .15 }), bulbM = mat(hue, hue, 1), eyeM = new T.MeshBasicMaterial({ color: 0xFFFFFF });
+      const add = (geo, m, x, y, z, p = g) => { const ms = new T.Mesh(geo, m); ms.position.set(x, y, z); ms.castShadow = true; p.add(ms); return ms; };
+      const head = new T.Group(); head.position.y = 1.48; g.add(head);
+      add(new T.CylinderGeometry(.36, .44, .76, 28), body, 0, .64, 0);
+      add(new T.TorusGeometry(.37, .035, 10, 32), trim, 0, .99, 0).rotation.x = Math.PI / 2;
+      add(new T.SphereGeometry(.42, 32, 24), body, 0, 0, 0, head).scale.set(1.08, .92, 1);
+      const v = add(new T.SphereGeometry(.44, 32, 16, Math.PI / 2 - .95, 1.9, 1.12, .82), visorM, 0, 0, 0, head); v.material.side = T.DoubleSide; v.scale.set(1.08, .92, 1);
+      const eyes = [-.14, .14].map(x => { const e = add(new T.SphereGeometry(.055, 12, 8), eyeM, x, .03, .41, head); e.scale.set(1, 1.5, .5); return e; });
+      add(new T.CylinderGeometry(.02, .02, .28, 8), trim, 0, .5, 0, head);
+      [-1, 1].forEach(s => add(new T.CylinderGeometry(.09, .09, .08, 16), trim, s * .45, 0, 0, head).rotation.z = Math.PI / 2);
+      add(new T.SphereGeometry(.08, 16, 12), bulbM, 0, .68, 0, head);
+      const halo = glow(hue, .55); halo.position.set(0, .68, 0); head.add(halo);
+      const arms = [-1, 1].map(s => { const p = new T.Group(); p.position.set(s * .47, .92, 0); g.add(p); add(new T.CylinderGeometry(.065, .065, .46, 12), body, 0, -.26, 0, p); add(new T.SphereGeometry(.09, 12, 10), trim, 0, -.54, 0, p); return p; });
+      const ring = new T.Mesh(new T.RingGeometry(.38, .52, 40), new T.MeshBasicMaterial({ color: hue, transparent: true, opacity: .45, side: T.DoubleSide, depthWrite: false })); ring.rotation.x = -Math.PI / 2; ring.position.y = .02;
+      return { g, head, eyes, arms, bulbM, visorM, halo, ring, hue, state: "idle", ph: Math.random() * 10, jump: 0, dim: false, alarm: false };
+    }
+    const LAY = { spawn: [-13.6, 0, .5], gateIn: [-9.8, 0, .5], orch: [-5.9, 0, .5], profile: [-1.8, 0, -2.8], experience: [1.5, 0, -2.8], credentials: [4.8, 0, -2.8], projects: [-.2, 0, 2.6], skills: [3.1, 0, 2.6], gateOut: [8.2, 0, .5], contact: [10.7, 0, .5], you: [13.2, 0, .5] };
+    const st = {}, labels = [], fitPts = [];
+    function pad(x, z, r, hue) {
+      mesh(new T.CylinderGeometry(r, r, .04, 56), std(0x46505F, { roughness: .5 }), x, .02, z).castShadow = false;
+      const ring = new T.Mesh(new T.RingGeometry(r - .08, r, 72), new T.MeshBasicMaterial({ color: hue, transparent: true, opacity: .75, side: T.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.set(x, .05, z); scene.add(ring);
+    }
+    function station(key) {
+      const kind = key === "gateIn" || key === "gateOut" ? "gate" : key === "orch" || key === "you" || key === "spawn" || key === "contact" ? key : "agent";
+      const p = LAY[key], grp = new T.Group(); grp.position.set(...p); scene.add(grp);
+      const s = st[key] = { kind, pos: new T.Vector3(...p) };
+      const hue = kind === "gate" ? HUE.gate : HUE[key];
+      if (kind === "agent" || kind === "orch" || kind === "gate" || kind === "contact") {
+        const bot = makeBot(hue), holder = new T.Group(); holder.add(bot.g); holder.add(bot.ring); grp.add(holder); s.bot = bot; bot.base = .12;
+        if (kind === "orch") {
+          holder.scale.setScalar(1.3); holder.position.y = .28;
+          const pod = new T.Mesh(new T.CylinderGeometry(1, 1.1, .28, 40), std(0xFFFFFF, { roughness: .5 })); pod.position.y = .14; pod.castShadow = pod.receiveShadow = true; grp.add(pod);
+          const h1 = new T.Mesh(new T.TorusGeometry(.75, .03, 8, 64), new T.MeshBasicMaterial({ color: HUE.orch, transparent: true, opacity: .8 })); h1.position.set(0, .1, 0); bot.head.add(h1);
+          const h2 = new T.Mesh(new T.TorusGeometry(.94, .03, 8, 64), new T.MeshBasicMaterial({ color: HUE.orch, transparent: true, opacity: .4 })); h2.position.set(0, .1, 0); bot.head.add(h2); s.halos = [h1, h2];
+        }
+        if (kind === "gate") holder.position.set(0, 0, -1.9);
+      }
+      if (kind === "agent") {
+        const top = new T.Mesh(new T.BoxGeometry(1.7, .08, .78), std(0x2B2F36, { roughness: .4 })); top.position.set(0, .8, .7);
+        const ped = new T.Mesh(new T.BoxGeometry(1.5, .76, .62), std(0xF2F4F7)); ped.position.set(0, .38, .7);
+        [top, ped].forEach(m => { m.castShadow = m.receiveShadow = true; grp.add(m); });
+        const tex = codeTex(hue), scr = new T.Mesh(new T.PlaneGeometry(.78, .48), new T.MeshBasicMaterial({ map: tex, transparent: true, opacity: .92, side: T.DoubleSide }));
+        scr.position.set(.42, 1.12, .82); scr.rotation.set(-.25, -.35, 0); grp.add(scr);
+        const frame = new T.Mesh(new T.PlaneGeometry(.84, .54), new T.MeshBasicMaterial({ color: hue, transparent: true, opacity: .35, side: T.DoubleSide })); frame.position.copy(scr.position); frame.rotation.copy(scr.rotation); frame.translateZ(-.005); grp.add(frame);
+        s.scr = scr; s.tex = tex; s.frame = frame;
+      }
+      if (kind === "agent" || kind === "contact" || kind === "you") pad(p[0], p[2], 1.4, hue);
+      if (kind === "orch") pad(p[0], p[2], 1.9, hue);
+      if (kind === "gate") {
+        const am = new T.MeshStandardMaterial({ color: 0xFFFFFF, emissive: HUE.gate, emissiveIntensity: .35, roughness: .4 }); s.archM = am;
+        [-.9, .9].forEach(z => { const m = new T.Mesh(new T.BoxGeometry(.28, 2.5, .28), am); m.position.set(0, 1.25, z); m.castShadow = true; grp.add(m); });
+        const beam = new T.Mesh(new T.BoxGeometry(.28, .28, 2.08), am); beam.position.y = 2.6; beam.castShadow = true; grp.add(beam);
+        s.field = new T.Mesh(new T.PlaneGeometry(1.52, 2.45), new T.MeshBasicMaterial({ color: HUE.gate, transparent: true, opacity: .1, side: T.DoubleSide, depthWrite: false, blending: T.AdditiveBlending })); s.field.rotation.y = Math.PI / 2; s.field.position.y = 1.23; grp.add(s.field);
+        s.scan = new T.Mesh(new T.BoxGeometry(.06, .05, 1.52), new T.MeshBasicMaterial({ color: HUE.gate })); s.scan.visible = false; grp.add(s.scan);
+      }
+      if (kind === "you") {
+        s.ring = new T.Mesh(new T.TorusGeometry(.95, .08, 16, 64), new T.MeshStandardMaterial({ color: 0x9AA3B2, emissive: HUE.ok, emissiveIntensity: .1, roughness: .3 })); s.ring.position.y = 1.25; s.ring.rotation.y = Math.PI / 2; s.ring.castShadow = true; grp.add(s.ring);
+        s.disc = new T.Mesh(new T.CircleGeometry(.88, 48), new T.MeshBasicMaterial({ color: HUE.ok, transparent: true, opacity: .06, side: T.DoubleSide, depthWrite: false })); s.disc.position.y = 1.25; s.disc.rotation.y = Math.PI / 2; grp.add(s.disc);
+        const base = new T.Mesh(new T.CylinderGeometry(.5, .6, .14, 32), std(0x2A2F3A)); base.position.y = .07; grp.add(base);
+      }
+      const ay = { agent: 1.55, orch: 2.2, gate: 1.25, you: 1.25, contact: 1.55, spawn: 1.25 }[kind];
+      s.anchor = s.pos.clone().add(new T.Vector3(0, ay, 0));
+      if (kind !== "spawn") {
+        const d = document.createElement("div"); d.className = "lbl"; d.innerHTML = "<b></b><span></span>"; d.firstChild.textContent = NAMES[key]; host.appendChild(d);
+        const lp = s.anchor.clone().add(new T.Vector3(0, { agent: 1.05, orch: 1.3, gate: 1.65, you: 1.3, contact: 1.05 }[kind], 0)); labels.push({ el: d, pos: lp }); s.lbl = d; s.lpos = lp;
+        [[-1, 0, -1.2], [1, 0, -1.2], [-1, 0, 1.3], [1, 0, 1.3], [0, lp.y - p[1] + .5, 0]].forEach(o => fitPts.push(s.pos.clone().add(new T.Vector3(...o))));
+      }
+    }
+    Object.keys(LAY).forEach(station);
+
+    /* motion */
+    let tweens = [], fx = [];
+    const tween = (ms, fn) => new Promise(res => tweens.push({ t0: performance.now(), ms, fn, res }));
+    function fly(a, b, hex, ms, alive) {
+      const g = new T.Group(), core = new T.Mesh(new T.OctahedronGeometry(.17), new T.MeshBasicMaterial({ color: 0xFFFFFF })); g.add(core); g.add(glow(hex, 1.15)); scene.add(g);
+      const trail = Array.from({ length: 7 }, (_, i) => { const s = glow(hex, .72 - i * .08); s.material.opacity = .6 - i * .08; scene.add(s); return s; });
+      const A = st[a].anchor, B = st[b].anchor, h = .9 + A.distanceTo(B) * .12, hist = [], parts = [g, ...trail]; fx.push(...parts);
+      return tween(ms, k => {
+        if (!alive()) k = 1;
+        const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; g.position.lerpVectors(A, B, e); g.position.y += Math.sin(Math.PI * e) * h; core.rotation.y += .2; core.rotation.x += .13;
+        hist.unshift(g.position.clone()); if (hist.length > 24) hist.pop(); trail.forEach((s, i) => s.position.copy(hist[Math.min(hist.length - 1, (i + 1) * 3)]));
+        if (k >= 1) parts.forEach(o => scene.remove(o));
+        return k;
+      });
+    }
+    function burst(key) {
+      if (reduce) return; const at = st[key].anchor;
+      const parts = Array.from({ length: 16 }, () => { const m = new T.Mesh(new T.BoxGeometry(.09, .09, .09), new T.MeshBasicMaterial({ color: HUE.bad, transparent: true })); m.position.copy(at); m.userData.v = new T.Vector3((Math.random() - .5) * 5, Math.random() * 4 + 1, (Math.random() - .5) * 5); scene.add(m); fx.push(m); return m; });
+      let last = 0; tween(1100, k => { const dt = (k - last) * 1.1; last = k; parts.forEach(p => { p.userData.v.y -= 9 * dt; p.position.addScaledVector(p.userData.v, dt); p.rotation.x += .2; p.material.opacity = 1 - k; if (k >= 1) scene.remove(p); }); return k; });
+    }
+
+    /* camera fit: wide view on desktop, end-on view on phones */
+    const target = new T.Vector3(0, .5, -.2), OFF_W = new T.Vector3(9, 14, 19), OFF_P = new T.Vector3(13, 24, 2.5), off = new T.Vector3(), v = new T.Vector3(), up = new T.Vector3(0, 1, 0);
+    let W = 1, H = 1, portrait = false, mx = 0, my = 0;
+    function fit() {
+      const r = host.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); R.setSize(W, H, false);
+      const asp = W / H; portrait = asp < .95; off.copy(portrait ? OFF_P : OFF_W);
+      camera.position.copy(target).add(off); camera.lookAt(target); camera.updateMatrixWorld();
+      let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      fitPts.forEach(p => { v.copy(p).applyMatrix4(camera.matrixWorldInverse); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); });
+      const padT = portrait ? 5.2 : 1.6, padB = portrait ? 2.4 : .6;
+      let w = x1 - x0 + 1, h = y1 - y0 + padT + padB; const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2 + (padT - padB) / 2;
+      if (w / h < asp) w = h * asp; else h = w / asp;
+      Object.assign(camera, { left: cx - w / 2, right: cx + w / 2, top: cy + h / 2, bottom: cy - h / 2 }); camera.updateProjectionMatrix();
+      frame(performance.now());
+    }
+    host.addEventListener("pointermove", e => { if (!fine) return; const r = host.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5; });
+    host.addEventListener("pointerleave", () => { mx = my = 0; });
+
+    let last = performance.now(), youLit = false;
+    function place(el, pos, dy) {
+      v.copy(pos).project(camera); let x = (v.x * .5 + .5) * W, y = (-v.y * .5 + .5) * H + dy;
+      const hw = el.offsetWidth / 2; x = Math.max(hw + 6, Math.min(W - hw - 6, x));
+      el.style.transform = "translate(" + (x - hw).toFixed(1) + "px," + (y - el.offsetHeight).toFixed(1) + "px)";
+    }
+    function frame(now) {
+      const t = now / 1000, dt = Math.min(.05, (now - last) / 1000); last = now;
+      tweens = tweens.filter(tw => { const k = tw.fn(Math.min(1, (now - tw.t0) / tw.ms)); if (k >= 1) { tw.res(); return false; } return true; });
+      const ang = reduce ? 0 : Math.sin(t * .18) * (portrait ? .04 : .08) + mx * .22;
+      const o = off.clone().applyAxisAngle(up, ang); o.y -= reduce ? 0 : my * 1.5;
+      camera.position.copy(target).add(o); camera.lookAt(target);
+      for (const k in st) {
+        const s = st[k], b = s.bot; if (!b) continue; const tt = reduce ? 0 : t + b.ph;
+        b.g.position.y = b.base + Math.sin(tt * 2) * .05 + b.jump;
+        b.head.rotation.y = b.state === "work" ? Math.sin(tt * 3) * .08 : Math.sin(tt * .7) * .3; b.head.rotation.x = b.state === "work" ? .28 : b.state === "think" ? -.15 : 0;
+        b.head.rotation.z = b.alarm ? Math.sin(tt * 30) * .08 : 0;
+        b.arms.forEach((a, i) => { a.rotation.x = b.state === "work" ? -1.15 + Math.sin(tt * 18 + i * Math.PI) * .18 : b.state === "think" ? -.4 + Math.sin(tt * 4 + i) * .2 : Math.sin(tt * 1.4 + i) * .08; a.rotation.z = (i ? -1 : 1) * (b.state === "done" ? .5 + Math.sin(tt * 8) * .2 : .08); });
+        const blink = (tt % 3.7) < .12; b.eyes.forEach(e => e.scale.y = blink ? .12 : 1.5);
+        const pulse = b.state === "work" || b.state === "think" ? .8 + Math.sin(tt * 10) * .6 : 1;
+        b.bulbM.emissiveIntensity = b.dim ? .1 : pulse; b.visorM.emissiveIntensity = b.dim ? .12 : b.alarm ? .8 + Math.sin(tt * 20) * .8 : 1.1; b.halo.material.opacity = b.dim ? .1 : .9;
+        b.ring.rotation.z = tt * .6; b.ring.material.opacity = b.dim ? .1 : .45;
+        if (s.tex) { s.tex.offset.y -= dt * (b.state === "work" ? 1.4 : .05); s.scr.material.opacity = b.dim ? .15 : .92; s.frame.material.opacity = b.dim ? .05 : .35; }
+        if (s.halos) { const f = b.state === "think" ? 3 : .6; s.halos[0].rotation.x = Math.PI / 2 + Math.sin(tt) * .3; s.halos[0].rotation.z = tt * f; s.halos[1].rotation.x = Math.PI / 2 + Math.sin(tt * .8 + 1) * .4; s.halos[1].rotation.z = -tt * f * .7; }
+        if (s.archM && s.alarmOn) s.archM.emissiveIntensity = .6 + Math.sin(tt * 18) * .6;
+        if (s.scan && s.scanning) { s.scan.visible = true; s.scan.position.y = .1 + ((t * 1.6) % 1) * 2.4; s.field.material.opacity = .14 + Math.sin(t * 12) * .06; }
+      }
+      if (youLit) st.you.disc.material.opacity = .35 + Math.sin(t * 4) * .1;
+      R.render(scene, camera);
+      for (const l of labels) { v.copy(l.pos).project(camera); l.el.style.transform = "translate(" + ((v.x * .5 + .5) * W).toFixed(1) + "px," + ((-v.y * .5 + .5) * H).toFixed(1) + "px) translate(-50%,-100%)"; }
+      if (!bubbleOrch.hidden) place(bubbleOrch, st.orch.lpos, -46);
+      if (!bubbleYou.hidden) place(bubbleYou, st.you.lpos, -46);
+    }
+    let running = false, raf = 0;
+    const loop = now => { frame(now); if (running) raf = requestAnimationFrame(loop); };
+    new IntersectionObserver(([e]) => { if (e.isIntersecting && !running) { running = true; last = performance.now(); raf = requestAnimationFrame(loop); } else if (!e.isIntersecting) { running = false; cancelAnimationFrame(raf); } }).observe(host);
+    new ResizeObserver(fit).observe(host);
+    const kick = () => { if (!running) frame(performance.now()); };
+
+    const resetBot = (k) => { const b = st[k].bot, h = st[k].kind === "gate" ? HUE.gate : HUE[k]; b.state = "idle"; b.dim = false; b.alarm = false; b.jump = 0; b.bulbM.color.setHex(h); b.bulbM.emissive.setHex(h); };
+    return {
+      status(k, text, cls) { const d = st[k].lbl; d.className = "lbl " + ({ ready: "ok", ok: "ok", work: "work", bad: "bad" }[cls] || "") + (st[k].bot && st[k].bot.dim ? " dim" : ""); d.lastChild.textContent = text || ""; },
+      state(k, s) { const b = st[k].bot; b.dim = s === "dim"; b.state = s === "work" ? (k === "orch" || k === "contact" ? "think" : "work") : "idle"; st[k].lbl.classList.toggle("dim", b.dim); kick(); },
+      pop(k) { const b = st[k].bot; b.state = "done"; b.bulbM.color.setHex(HUE.ok); b.bulbM.emissive.setHex(HUE.ok); if (reduce) return; tween(500, x => { b.jump = Math.sin(Math.PI * x) * .45; return x; }).then(() => { if (b.state === "done") b.state = "idle"; }); },
+      gate(k, mode) { const s = st[k], c = mode === "ok" ? HUE.ok : mode === "bad" ? HUE.bad : HUE.gate;
+        s.scanning = mode === "scan"; s.scan.visible = s.scanning; s.archM.emissive.setHex(c); s.archM.emissiveIntensity = mode === "ok" || mode === "bad" ? .9 : .35;
+        s.field.material.color.setHex(c); s.scan.material.color.setHex(c); s.field.material.opacity = mode && mode !== "scan" ? .2 : .1; s.alarmOn = mode === "bad";
+        s.bot.bulbM.color.setHex(c); s.bot.bulbM.emissive.setHex(c); s.bot.alarm = mode === "bad"; s.bot.state = mode === "scan" ? "think" : "idle"; kick(); },
+      you(on) { youLit = on; st.you.ring.material.emissiveIntensity = on ? 1 : .1; st.you.disc.material.opacity = on ? .4 : .06; kick(); },
+      fly(a, b, color, ms, alive) { return fly(a, b, new T.Color(color).getHex(), ms, alive); },
+      burst(k) { burst(k); },
+      reset() { tweens.forEach(tw => tw.res()); tweens = []; fx.forEach(o => scene.remove(o)); fx = []; Object.keys(st).forEach(k => { if (st[k].bot) resetBot(k); }); kick(); },
+      kick
+    };
   }
-  function fxLoop() { if (fxOn) fxDraw(); if (!reduce) requestAnimationFrame(fxLoop); }
-  new IntersectionObserver(([e]) => (fxOn = e.isIntersecting)).observe(scroller);
+  let B = null;
+  try { B = makeOffice(officeEl); } catch (e) { B = null; }
+  if (!B) {
+    officeEl.insertAdjacentHTML("beforeend", '<div class="nogl">The 3D office needs WebGL, which this browser could not start. The missions still run: follow them in the run trace below.</div>');
+    const noop = () => {};
+    B = { status: noop, state: noop, pop: noop, gate: noop, you: noop, burst: noop, reset: noop, kick: noop, fly: () => Promise.resolve() };
+  }
 
   /* ---------- run engine ---------- */
   let speed = reduce ? 0 : 1, runId = 0, t0 = 0;
   const sleep = ms => new Promise(r => setTimeout(r, ms * speed));
-  const node = k => $("#n-" + k);
-  function status(k, text, cls) { const st = $("[data-st]", node(k)); st.textContent = text; st.className = "st " + (cls || ""); }
-  function state(k, s) { const n = node(k); n.classList.remove("sleep", "work", "dim", "pop"); if (s) n.classList.add(s); }
-  function pop(k) { const n = node(k); n.classList.remove("pop"); void n.offsetWidth; n.classList.add("pop"); }
+  const status = (k, text, cls) => B.status(k, text, cls);
+  const state = (k, s) => B.state(k, s);
+  const pop = k => B.pop(k);
   function bump(id) { const el = $(id); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
-
-  function travel(key, color, id) {
-    const pts = P[key], total = LEN[key];
-    const lit = mkPath("lit", dOf(pts)); lit.style.stroke = color; lit.style.color = color;
-    lit.style.strokeDasharray = total; lit.style.strokeDashoffset = total; wLit.appendChild(lit);
-    if (total / 0.45 * speed < 20) { lit.style.strokeDashoffset = 0; return Promise.resolve(); }
-    return new Promise(res => {
-      const head = document.createElement("div"); head.className = "packet"; head.style.setProperty("--pc", color); board.appendChild(head);
-      const trail = Array.from({ length: 7 }, (_, i) => { const t = document.createElement("div"); t.className = "trail"; t.style.setProperty("--pc", color); t.style.opacity = (0.55 - i * 0.07).toFixed(2); t.style.transform = "scale(" + (1 - i * 0.11).toFixed(2) + ")"; board.appendChild(t); return t; });
-      const hist = []; let prev = performance.now(), d = 0;
-      const cleanup = () => { head.remove(); trail.forEach(t => t.remove()); };
-      const step = now => {
-        if (id !== runId) { cleanup(); return res(); }
-        d = Math.min(total, d + (now - prev) * 0.45 / Math.max(speed, 0.001)); prev = now;
-        const [x, y] = pointAt(pts, d);
-        head.style.left = x + "px"; head.style.top = y + "px";
-        hist.unshift([x, y]); if (hist.length > 28) hist.pop();
-        trail.forEach((t, i) => { const h = hist[Math.min(hist.length - 1, (i + 1) * 3)]; t.style.left = h[0] + "px"; t.style.top = h[1] + "px"; });
-        lit.style.strokeDashoffset = total - d;
-        if (d < total) requestAnimationFrame(step); else { cleanup(); res(); }
-      };
-      requestAnimationFrame(step);
-    });
-  }
+  function travel(a, b, color, id) { const ms = 950 * speed; if (ms < 30) return Promise.resolve(); return B.fly(a, b, color, ms, () => id === runId); }
 
   const traceEl = $("#trace");
   function trace(who, msg, cls) {
@@ -803,11 +781,10 @@
     const tick = () => { out.textContent = msg.slice(0, i += 2); if (i < msg.length) setTimeout(tick, 12); else out.classList.remove("typing"); };
     tick();
   }
-  const bubbleOrch = $("#bubble-orch"), bubbleYou = $("#bubble-you");
   let bubbleTimer = 0;
   function say(text) {
     clearTimeout(bubbleTimer);
-    if (speed < 0.2) { bubbleOrch.textContent = text; return; }
+    if (speed < 0.2) { bubbleOrch.textContent = text; B.kick(); return; }
     let i = 0;
     const tick = () => { bubbleOrch.textContent = text.slice(0, ++i); const c = document.createElement("span"); c.className = "caret"; bubbleOrch.appendChild(c); if (i < text.length) bubbleTimer = setTimeout(tick, 18); else bubbleTimer = setTimeout(() => c.remove(), 900); };
     tick();
@@ -821,11 +798,10 @@
   }
 
   function reset() {
-    wLit.innerHTML = ""; $$(".packet, .trail", board).forEach(p => p.remove());
-    traceEl.innerHTML = "";
-    ["profile", "experience", "credentials", "projects", "skills", "contact"].forEach(k => { state(k, "sleep"); status(k, "waiting"); });
-    ["gateIn", "gateOut"].forEach(k => { $("[data-gate]", node(k)).classList.remove("open", "blocked", "checking"); status(k, "waiting"); });
-    state("orch", null); status("orch", "ready", "ready"); status("you", "waiting"); node("you").classList.remove("reached");
+    B.reset(); traceEl.innerHTML = "";
+    AGENTS.concat("contact").forEach(k => { state(k, "sleep"); status(k, "waiting"); });
+    ["gateIn", "gateOut"].forEach(k => { B.gate(k, null); status(k, "on duty"); });
+    state("orch", null); status("orch", "ready", "ready"); status("you", "waiting"); B.you(false);
     bubbleYou.hidden = true;
     $$(".dcard").forEach(c => { c.classList.remove("hit"); const s = $(".stamp", c); if (s) s.hidden = true; });
   }
@@ -879,64 +855,63 @@
     const id = ++runId; speed = reduce ? 0 : 1; t0 = performance.now();
     const alive = () => id === runId;
     $("#skip").hidden = reduce; reset();
-    if (layout === "tall") { const r = scroller.getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight * 0.5) scroller.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
+    const r = officeEl.getBoundingClientRect(); if (innerWidth < 760 && (r.top < 0 || r.top > innerHeight * 0.5)) officeEl.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     $$(".chip").forEach(c => c.classList.toggle("active", c.dataset.m === mid));
     $("#note-text").textContent = m.q; $("#note").classList.add("armed");
-    say("New mission. Checking it at the gate…");
+    say("New mission. Checking it at the door…");
     answer("Orchestrator · working", "The team is on it…");
     trace("mission", m.q);
 
-    await travel("noteToGate", COLOR.accent, id); if (!alive()) return;
-    const gIn = $("[data-gate]", node("gateIn"));
-    gIn.classList.add("checking"); status("gateIn", "scanning…", "work"); await sleep(700); if (!alive()) return;
-    gIn.classList.remove("checking");
+    await travel("spawn", "gateIn", COLOR.accent, id); if (!alive()) return;
+    B.gate("gateIn", "scan"); status("gateIn", "scanning…", "work"); await sleep(900); if (!alive()) return;
     const v = inputGate(m.q);
     if (!v.ok) {
-      gIn.classList.add("blocked"); status("gateIn", "blocked", "bad");
+      B.gate("gateIn", "bad"); B.burst("gateIn"); status("gateIn", "blocked", "bad");
       trace("input_gate", "blocked: " + v.why, "bad");
-      say("Blocked at the gate. Nothing was dispatched.");
+      say("Blocked at the door. Nothing was dispatched.");
       status("orch", "idle"); session.blocked++; bump("#k-blocked");
       if (mid) session.done.add(mid);
       trace("run", "mission stopped at the input gate", "bad");
       answer("Input gate · blocked", "Blocked at the input gate (" + v.why + "). This board only answers questions about his work, and no agent can read private details like a phone number because they are not in the dossier.");
       finish(id); return;
     }
-    gIn.classList.add("open"); status("gateIn", "passed", "ok");
+    B.gate("gateIn", "ok"); status("gateIn", "passed ✓", "ok");
     trace("input_gate", "passed: no override or private-data pattern", "ok");
-    await travel("gateToOrch", COLOR.accent, id); if (!alive()) return;
+    await travel("gateIn", "orch", COLOR.orch, id); if (!alive()) return;
 
     const agents = m.agents || route(m.q);
     session.routed++; bump("#k-routed");
     state("orch", "work"); status("orch", "planning", "work");
     say(agents.map(a => LABEL[a]).join(", ") + ": go. Contact: wait.");
     trace("orchestrator", "plan → " + agents.join(", ") + " → contact");
-    AGENTS.forEach(k => { if (!agents.includes(k)) node(k).classList.add("dim"); });
+    AGENTS.forEach(k => { if (!agents.includes(k)) { state(k, "dim"); status(k, "not needed"); } });
     await sleep(700); if (!alive()) return;
     status("orch", agents.length + " agent" + (agents.length > 1 ? "s" : "") + " dispatched", "work");
 
-    let passed = 0; const gOut = $("[data-gate]", node("gateOut"));
+    let passed = 0;
     await Promise.all(agents.map((a, i) => (async () => {
       await sleep(i * 380); if (!alive()) return;
-      await travel("out_" + a, COLOR[a], id); if (!alive()) return;
+      await travel("orch", a, COLOR[a], id); if (!alive()) return;
       state(a, "work"); status(a, "working…", "work"); trace(a + "_agent", "task received, reading the dossier…");
       await sleep(1100 + i * 250); if (!alive()) return;
-      state(a, null); pop(a); status(a, "returned", "ok");
-      await travel("back_" + a, COLOR[a], id); if (!alive()) return;
+      state(a, null); pop(a); status(a, "returned ✓", "ok");
+      B.gate("gateOut", "scan"); status("gateOut", "verifying…", "work");
+      await travel(a, "gateOut", COLOR[a], id); if (!alive()) return;
       const n = $$("[data-item]", $("#d-" + a)).length;
-      passed++; gOut.classList.add("checking"); status("gateOut", passed + " / " + agents.length + " verified", "ok");
+      passed++; status("gateOut", passed + " / " + agents.length + " verified", "work");
       trace("output_gate", a + ": " + n + " " + UNIT[a] + " found in the dossier ✓", "ok");
     })()));
     if (!alive()) return;
-    gOut.classList.remove("checking"); gOut.classList.add("open");
+    B.gate("gateOut", "ok"); status("gateOut", passed + " / " + agents.length + " grounded ✓", "ok");
     session.ok += passed; session.total += agents.length; bump("#k-grounded");
     state("orch", null); pop("orch"); status("orch", "merged", "ok"); trace("orchestrator", "merged " + agents.length + " answer" + (agents.length > 1 ? "s" : ""));
     say("Merged. Handing off.");
 
-    await travel("gateToContact", COLOR.contact, id); if (!alive()) return;
+    await travel("gateOut", "contact", COLOR.contact, id); if (!alive()) return;
     state("contact", "work"); status("contact", "handing off", "work"); await sleep(600); if (!alive()) return;
     state("contact", null); pop("contact"); status("contact", "handed off", "ok"); trace("contact_agent", "handoff → you (human in the loop)");
-    await travel("contactToYou", COLOR.contact, id); if (!alive()) return;
-    node("you").classList.add("reached"); status("you", "your call", "ok"); bubbleYou.hidden = false; bubbleYou.textContent = "Over to you. The email is in the dossier.";
+    await travel("contact", "you", COLOR.contact, id); if (!alive()) return;
+    B.you(true); status("you", "your call", "ok"); bubbleYou.hidden = false; bubbleYou.textContent = "Over to you. The email is in the dossier."; B.kick();
     trace("run", "mission complete ★", "ok");
 
     answer("Orchestrator · merged answer", m.a || agents.map(a => SUMMARY[a]).join(" "));
@@ -950,35 +925,13 @@
     $$(".chip").forEach(c => c.classList.toggle("done", session.done.has(c.dataset.m)));
   }
 
-  /* ---------- fit + interactions ---------- */
-  function fit() {
-    const avail = scroller.clientWidth, want = avail < 760 ? "tall" : "wide";
-    if (want !== layout) {
-      const switching = layout !== "";
-      if (switching) runId++;
-      applyLayout(want);
-      if (switching) { reset(); $$(".chip").forEach(c => c.classList.remove("active")); $("#skip").hidden = true; $("#note").classList.remove("armed"); }
-    }
-    const L = LAYOUT[layout];
-    const z = layout === "wide" ? Math.max(0.8, Math.min(1, (avail - 24) / L.W)) : Math.max(0.8, Math.min(1.3, avail / L.W));
-    board.style.zoom = z;
-    swipe.classList.toggle("show", avail < L.W * z - 2);
-    scroller.style.overflowX = avail >= L.W * z + 8 ? "hidden" : "auto";
-    fxSize(); if (reduce) fxDraw();
-  }
-
+  /* ---------- interactions ---------- */
   $$(".chip").forEach(c => c.addEventListener("click", () => run(MISSIONS[c.dataset.m], c.dataset.m)));
   $("#ask").addEventListener("submit", e => { e.preventDefault(); const q = $("#ask-input").value.trim().slice(0, 160); run({ q: q || "(empty)" }, null); });
   $("#skip").addEventListener("click", () => { speed = 0.04; });
-  addEventListener("resize", fit); fit(); fxLoop();
+  reset();
 
   if (!reduce && fine) {
-    scroller.addEventListener("pointermove", e => {
-      if (layout !== "wide") return;
-      const r = scroller.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      board.style.transform = "rotateX(" + (-y * 4).toFixed(2) + "deg) rotateY(" + (x * 5).toFixed(2) + "deg)";
-    });
-    scroller.addEventListener("pointerleave", () => (board.style.transform = ""));
     $$(".mag, .btn").forEach(b => {
       b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = "translate(" + ((e.clientX - r.left - r.width / 2) * .15).toFixed(1) + "px," + ((e.clientY - r.top - r.height / 2) * .25).toFixed(1) + "px)"; });
       b.addEventListener("pointerleave", () => (b.style.transform = ""));
